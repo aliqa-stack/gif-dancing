@@ -1,0 +1,13 @@
+.PHONY: all clean
+
+main: main.cpp
+	g++ main.cpp -lraylib -o  main
+
+all: main
+
+
+run: main
+	./main
+
+clean:
+	rm -f main
