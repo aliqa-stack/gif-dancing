@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include "raylib.h"
 int currentAnime = 0;
 int frameDelay = 8;
@@ -21,6 +22,21 @@ void PlayGif(int& animFrames, Image& imScarfyAnim, Texture2D& texScarfyAnim){
 
 }
 
+float Random(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.5f, 2.0f);
+    return dis(gen);
+}
+
+bool CheckColl(Vector2& position, Image& imScarfyAnims){
+    if((position.x + imScarfyAnims.width) >= GetScreenWidth() && position.x <= 0){
+        position.x *= -1;
+        return true;
+    }
+    return false;
+}
+
 int main(void){
     SetConfigFlags(FLAG_WINDOW_TRANSPARENT);
     const int WIDTH = 1020;
@@ -35,15 +51,29 @@ int main(void){
         std::cout<<"cannot load GIF \n";
         return 1;
     }
+    Vector2 movement = {0, 0};
+    int gifSpeed = 3;
+    bool isMoved = false;
     
     Texture2D texScarfyAnim = LoadTextureFromImage(imScarfyAnim);
     while(!WindowShouldClose()){
         frameCounter++;
         PlayGif(animFrames, imScarfyAnim, texScarfyAnim);
-  
+        if(IsKeyDown(KEY_F)){
+            isMoved = true;
+
+        }
+        if(isMoved){
+            movement.x += Random() * gifSpeed;
+        }
+        if((movement.x + imScarfyAnim.width) >= GetScreenWidth() || movement.x <= 0){
+            gifSpeed *= -1;
+        }
+     
+
         BeginDrawing();
         ClearBackground(BLANK);
-        DrawTextureEx(texScarfyAnim, (Vector2){GetScreenWidth()-800, GetScreenHeight()-600}, 0.9f, 0.9f, WHITE);
+        DrawTextureEx(texScarfyAnim, movement, 0.9f, 0.9f, WHITE);
 
         EndDrawing();
     }
